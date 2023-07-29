@@ -1,0 +1,35 @@
+pool:
+  name: Azure Pipelines
+steps:
+- task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@0
+  displayName: 'Use Terraform latest'
+
+- task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV4@4
+  displayName: 'Terraform : init'
+  inputs:
+    workingDirectory: 'AKS-Terraform'
+    backendServiceArm: femiterraservice
+    backendAzureRmResourceGroupName: 'femiterrastorage-rg'
+    backendAzureRmStorageAccountName: femiterrastorage23
+    backendAzureRmContainerName: terracontainernow
+    backendAzureRmKey: terraform.tfstate
+
+- task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV4@4
+  displayName: 'Terraform : validate'
+  inputs:
+    command: validate
+    workingDirectory: 'AKS-Terraform'
+
+- task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV4@4
+  displayName: 'Terraform : plan'
+  inputs:
+    command: plan
+    workingDirectory: 'AKS-Terraform'
+    environmentServiceNameAzureRM: femiterraservice
+
+- task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV4@4
+  displayName: 'Terraform : apply'
+  inputs:
+    command: apply
+    workingDirectory: 'AKS-Terraform'
+    environmentServiceNameAzureRM: femiterraservice
